@@ -41,7 +41,7 @@ export class MenuMusic {
     master.gain.value = 0;
     const filter = ctx.createBiquadFilter();
     filter.type = "lowpass";
-    filter.frequency.value = 1600;
+    filter.frequency.value = 2400;
     master.connect(filter);
     filter.connect(ctx.destination);
     this.ctx = ctx;
@@ -52,7 +52,7 @@ export class MenuMusic {
 
   private applyLevel() {
     if (!this.master || !this.ctx) return;
-    const level = this.muted || !this.started ? 0 : this.racing ? 0.045 : 0.11;
+    const level = this.muted || !this.started ? 0 : this.racing ? 0.18 : 0.48;
     this.master.gain.cancelScheduledValues(this.ctx.currentTime);
     this.master.gain.linearRampToValueAtTime(level, this.ctx.currentTime + 0.2);
   }
@@ -61,12 +61,12 @@ export class MenuMusic {
     if (!this.ctx || !this.master || this.muted || !this.started) return;
     const now = this.ctx.currentTime;
     const note = BASS[this.step % BASS.length];
-    if (this.step % 2 === 0) this.tone(note / 2, now, 0.22, "sawtooth", 0.07);
+    if (this.step % 2 === 0) this.tone(note / 2, now, 0.22, "sawtooth", 0.11);
     if (this.step % 4 === 0) {
-      this.tone(note, now, 0.16, "triangle", 0.035);
-      this.tone(note * 1.5, now + 0.03, 0.14, "sine", 0.025);
+      this.tone(note, now, 0.16, "triangle", 0.055);
+      this.tone(note * 1.5, now + 0.03, 0.14, "sine", 0.04);
     }
-    this.noise(now, 0.025, this.step % 2 === 0 ? 0.018 : 0.006);
+    this.noise(now, 0.025, this.step % 2 === 0 ? 0.016 : 0.006);
     this.step += 1;
   }
 
