@@ -2,7 +2,7 @@
   color-scheme: dark;
   --bg: #07080c;
   --bg-2: #10140f;
-  --card: #10141b;
+  --card: rgba(16, 20, 27, 0.88);
   --line: #2a3544;
   --text: #e7f2ea;
   --dim: #8e9aa6;
@@ -10,7 +10,7 @@
   --pink: #ff3d8a;
   --amber: #ffc857;
   --danger: #ff8d8d;
-  font-family: "Trebuchet MS", "Gill Sans", "Segoe UI", sans-serif;
+  font-family: Outfit, "Segoe UI", sans-serif;
 }
 
 * { box-sizing: border-box; }
@@ -18,10 +18,104 @@
 html, body, #app {
   margin: 0;
   height: 100%;
-  background:
-    linear-gradient(180deg, rgba(92, 255, 214, 0.04), transparent 28%),
-    var(--bg);
+  background: var(--bg);
   color: var(--text);
+}
+
+#app { position: relative; overflow: hidden; }
+
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.glow {
+  position: absolute;
+  width: 420px;
+  height: 420px;
+  border-radius: 50%;
+  filter: blur(30px);
+  opacity: 0.45;
+}
+
+.glow-a {
+  background: rgba(92, 255, 214, 0.22);
+  top: -80px;
+  left: -60px;
+  animation: float 9s ease-in-out infinite;
+}
+
+.glow-b {
+  background: rgba(255, 61, 138, 0.18);
+  right: -80px;
+  bottom: -40px;
+  animation: float 11s ease-in-out infinite reverse;
+}
+
+.grid {
+  position: absolute;
+  inset: -20%;
+  background-image:
+    linear-gradient(rgba(92, 255, 214, 0.09) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(92, 255, 214, 0.09) 1px, transparent 1px);
+  background-size: 56px 56px;
+  transform: perspective(500px) rotateX(58deg);
+  transform-origin: center top;
+  animation: grid-move 8s linear infinite;
+  mask-image: linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+}
+
+.car {
+  position: absolute;
+  width: 54px;
+  height: 24px;
+  border-radius: 7px 16px 16px 7px;
+  offset-rotate: auto;
+  animation: drive 16s linear infinite;
+}
+
+.car::after {
+  content: "";
+  position: absolute;
+  inset: 5px 16px 5px 8px;
+  background: rgba(7, 8, 12, 0.55);
+  border-radius: 3px;
+}
+
+.car-a {
+  background: linear-gradient(90deg, #5cffd6, #8af7ff);
+  box-shadow: 0 0 18px rgba(92, 255, 214, 0.8);
+  offset-path: path("M 40 180 C 180 40, 620 40, 820 200 S 640 520, 180 460 S 40 180, 40 180");
+}
+
+.car-b {
+  background: linear-gradient(90deg, #ff3d8a, #ffc857);
+  box-shadow: 0 0 18px rgba(255, 61, 138, 0.75);
+  animation-duration: 22s;
+  animation-delay: -8s;
+  offset-path: path("M 120 420 C 40 260, 260 80, 520 140 S 900 360, 700 500 S 120 420, 120 420");
+}
+
+body.racing .stage { opacity: 0; transition: opacity 0.4s ease; }
+
+@keyframes float {
+  50% { transform: translate3d(24px, 18px, 0); }
+}
+
+@keyframes grid-move {
+  to { background-position: 0 56px; }
+}
+
+@keyframes drive {
+  to { offset-distance: 100%; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
 }
 
 body {
@@ -47,10 +141,49 @@ header {
 }
 
 .brand {
-  font-weight: 800;
-  letter-spacing: 0.16em;
+  font-family: "Chakra Petch", Outfit, sans-serif;
+  font-weight: 700;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  font-size: 14px;
+  font-size: 15px;
+  text-shadow: 0 0 18px rgba(92, 255, 214, 0.45);
+}
+
+.head-tools {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  pointer-events: auto;
+}
+
+.sound {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+  padding: 7px 10px;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.sound.on { border-color: var(--cyan); color: var(--cyan); }
+
+.eq { display: inline-flex; align-items: flex-end; gap: 2px; height: 12px; }
+.eq i {
+  display: block;
+  width: 3px;
+  height: 4px;
+  background: currentColor;
+  transform-origin: bottom;
+}
+.sound.on .eq i { animation: eq 0.7s ease-in-out infinite; }
+.eq i:nth-child(2) { animation-delay: 0.15s; }
+.eq i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes eq {
+  50% { transform: scaleY(3); }
 }
 
 .link {
@@ -65,6 +198,8 @@ header {
 .link.bad { color: var(--danger); }
 
 .screen {
+  position: relative;
+  z-index: 1;
   min-height: 100%;
   display: grid;
   place-items: center;
@@ -79,7 +214,12 @@ header {
   border: 1px solid var(--line);
   border-top: 3px solid var(--cyan);
   padding: 22px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  animation: rise 0.55s ease both;
 }
+
+.split .card:nth-child(2) { animation-delay: 0.08s; }
 
 .split {
   width: min(980px, 100%);
@@ -99,8 +239,8 @@ header {
   font-size: 12px;
 }
 
-h1, h2, h3 { margin: 0 0 10px; font-weight: 750; }
-h1 { font-size: 34px; letter-spacing: -0.03em; line-height: 1.05; }
+h1, h2, h3 { margin: 0 0 10px; font-weight: 800; font-family: "Chakra Petch", Outfit, sans-serif; }
+h1 { font-size: 40px; letter-spacing: -0.03em; line-height: 1.02; }
 .lede { margin-top: 0; }
 
 form { display: grid; gap: 8px; }
@@ -124,7 +264,10 @@ button {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
 }
+
+button:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(92, 255, 214, 0.18); }
 
 button.ghost {
   background: transparent;
@@ -261,6 +404,11 @@ body.flash { box-shadow: inset 0 0 0 4px var(--pink); }
 
 @media (max-width: 800px) {
   .split { grid-template-columns: 1fr; }
-  h1 { font-size: 28px; }
+  h1 { font-size: 30px; }
   #countdown { font-size: 84px; }
+  .car { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stage, .card, .eq i, .glow, .grid, .car { animation: none !important; }
 }
