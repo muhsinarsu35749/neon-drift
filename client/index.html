@@ -8,6 +8,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/style.css" />
+    <script>
+      try {
+        if (localStorage.getItem("neon-drift-theme") === "light") document.documentElement.classList.add("light");
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="app">
@@ -21,7 +26,10 @@
       <header>
         <div class="brand">Neon Drift</div>
         <div class="head-tools">
-          <button type="button" id="sound-btn" class="sound" aria-pressed="true">
+          <button type="button" id="theme-btn" class="tool" aria-pressed="false">
+            <span id="theme-label">Dark</span>
+          </button>
+          <button type="button" id="sound-btn" class="tool sound" aria-pressed="true">
             <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
             <span id="sound-label">Music</span>
           </button>
@@ -37,7 +45,7 @@
           <form id="connect-form">
             <label for="name">Driver name</label>
             <input id="name" name="name" maxlength="16" autocomplete="nickname" required />
-            <button type="submit" id="connect-btn">Connect</button>
+            <button type="submit" id="connect-btn" class="primary">Connect</button>
           </form>
           <p id="connect-error" class="error"></p>
         </div>
@@ -59,13 +67,13 @@
               <option value="3">3</option>
               <option value="4" selected>4</option>
             </select>
-            <button type="submit">Create room</button>
+            <button type="submit" class="primary">Create room</button>
           </form>
           <form id="join-form" class="card">
             <h2>Join with a code</h2>
             <label for="code">Room code</label>
             <input id="code" name="code" maxlength="4" autocapitalize="characters" />
-            <button type="submit">Join</button>
+            <button type="submit" class="primary">Join</button>
           </form>
         </div>
         <p id="menu-error" class="error"></p>
@@ -83,7 +91,7 @@
           <div class="cars" id="car-picker"></div>
           <ul id="player-list" class="players"></ul>
           <p id="bridge-hint" class="hint"></p>
-          <button type="button" id="ready-btn">Ready</button>
+          <button type="button" id="ready-btn" class="primary">Ready</button>
         </div>
       </section>
 
@@ -101,13 +109,27 @@
         <div id="countdown" class="hidden"></div>
         <div id="toast" class="hidden"></div>
         <div id="results" class="hidden">
-          <div class="card">
-            <h2>Results</h2>
-            <ol id="result-list"></ol>
-            <h3>Best laps on this track</h3>
-            <ol id="board-list"></ol>
+          <div class="card results-card">
+            <div class="sheet-scroll">
+              <div class="sheet-title">
+                <h2>Results</h2>
+                <p id="results-meta" class="kicker"></p>
+              </div>
+              <ol id="result-list" class="sheet-list"></ol>
+              <div class="sheet-title">
+                <h3>Leaderboard</h3>
+                <p id="board-meta" class="kicker">Best laps</p>
+              </div>
+              <div class="sheet-columns" aria-hidden="true">
+                <span>Pos</span>
+                <span>Driver</span>
+                <span>Mode</span>
+                <span>Lap</span>
+              </div>
+              <ol id="board-list" class="sheet-list"></ol>
+            </div>
             <div class="row">
-              <button type="button" id="rematch-btn">Rematch</button>
+              <button type="button" id="rematch-btn" class="primary">Rematch</button>
               <button type="button" id="results-leave" class="ghost">Leave</button>
             </div>
           </div>

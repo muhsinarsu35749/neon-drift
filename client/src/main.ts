@@ -16,6 +16,9 @@ const raceScreen = must("#race");
 const link = must("#link");
 const soundBtn = must("#sound-btn") as HTMLButtonElement;
 const soundLabel = must("#sound-label");
+const themeBtn = must("#theme-btn") as HTMLButtonElement;
+const themeLabel = must("#theme-label");
+const THEME_KEY = "neon-drift-theme";
 const nameInput = mustInput<HTMLInputElement>("#name");
 const connectError = must("#connect-error");
 const menuError = must("#menu-error");
@@ -36,7 +39,9 @@ const hudSpeed = must("#hud-speed");
 const countdownEl = must("#countdown");
 const toastEl = must("#toast");
 const resultsEl = must("#results");
+const resultsMeta = must("#results-meta");
 const resultList = must("#result-list");
+const boardMeta = must("#board-meta");
 const boardList = must("#board-list");
 const rematchBtn = must("#rematch-btn") as HTMLButtonElement;
 
@@ -61,7 +66,7 @@ paintTracks();
 CAR_IDS.forEach((id) => {
   const button = document.createElement("button");
   button.type = "button";
-  button.innerHTML = `${CARS[id].name}<small>${CARS[id].blurb}</small>`;
+  button.innerHTML = `<span class="mini ${id}"></span><span class="pick"><b>${CARS[id].name}</b><small>${CARS[id].blurb}</small></span>`;
   button.addEventListener("click", () => net.command("select_car", { carId: id }));
   carPicker.append(button);
 });
@@ -108,6 +113,12 @@ soundBtn.addEventListener("click", () => {
   music.toggle();
   paintSound();
 });
+themeBtn.addEventListener("click", () => {
+  const light = !document.documentElement.classList.contains("light");
+  document.documentElement.classList.toggle("light", light);
+  localStorage.setItem(THEME_KEY, light ? "light" : "dark");
+  paintTheme();
+});
 window.addEventListener("pointerdown", (event) => {
   if (event.target instanceof Node && soundBtn.contains(event.target)) return;
   void music.start();
@@ -115,6 +126,7 @@ window.addEventListener("pointerdown", (event) => {
 
 net.onChange = () => paint();
 paintSound();
+paintTheme();
 if (net.token && net.name) net.connect(net.name);
 else paint();
 
@@ -131,6 +143,7 @@ function paint() {
   roomScreen.classList.toggle("hidden", phase !== "room");
   raceScreen.classList.toggle("hidden", phase !== "race");
   document.body.classList.toggle("racing", phase === "race");
+  if (phase !== "race") document.body.classList.remove("results-open");
   music.setRacing(phase === "race");
   link.textContent = net.status === "online" ? `online · ${net.pingMs} ms` : net.status;
   link.classList.toggle("on", net.status === "online");
@@ -150,6 +163,13 @@ function paintSound() {
   soundBtn.classList.toggle("on", !music.muted);
   soundBtn.setAttribute("aria-pressed", music.muted ? "false" : "true");
   soundLabel.textContent = music.muted ? "Muted" : "Music";
+}
+
+function paintTheme() {
+  const light = document.documentElement.classList.contains("light");
+  themeBtn.classList.toggle("on", light);
+  themeBtn.setAttribute("aria-pressed", light ? "true" : "false");
+  themeLabel.textContent = light ? "Light" : "Dark";
 }
 
 function screen() {
@@ -221,14 +241,27 @@ function paintHud() {
     toastEl.textContent = net.toast;
     toastEl.classList.remove("hidden");
   } else toastEl.classList.add("hidden");
+  document.body.classList.toggle("results-open", Boolean(net.results));
   if (net.results) {
     resultsEl.classList.remove("hidden");
+    const trackName = TRACKS.find((track) => track.id === (net.room?.trackId ?? net.snap?.trackId))?.name ?? "";
+    resultsMeta.textContent = trackName;
     resultList.replaceChildren(...net.results.map((row) => {
       const li = document.createElement("li");
+      if (row.playerId === net.playerId) li.classList.add("me");
+      if (row.fastestLap) li.classList.add("fastest");
       const time = row.finished && row.totalTimeMs != null ? formatMs(row.totalTimeMs) : "DNF";
-      const best = row.bestLapMs != null ? ` · best ${formatMs(row.bestLapMs)}` : "";
-      const bonus = row.fastestLap ? " · fastest lap" : "";
-      li.textContent = `P${row.position} ${row.playerName} · ${time}${best} · ${row.points} pts (${row.totalPoints} total)${bonus}`;
+      const detail = [
+        row.bestLapMs != null ? `best ${formatMs(row.bestLapMs)}` : "",
+        `${row.points} pts`,
+        row.fastestLap ? "fastest lap" : "",
+      ].filter(Boolean).join(" · ");
+      li.append(
+        cell("pos", `P${row.position}`),
+        cell("who", row.playerName),
+        cell("detail", detail),
+        cell("lap", time),
+      );
       return li;
     }));
     rematchBtn.textContent = net.voted ? "Voted for rematch" : "Rematch";
@@ -250,18 +283,38 @@ async function loadBoard(trackIdToLoad: number) {
     const res = await fetch(`${httpUrl()}/leaderboard?trackId=${trackIdToLoad}`);
     const body = (await res.json()) as { rows?: LeaderboardRow[] };
     const rows = body.rows ?? [];
-    boardList.replaceChildren(...(rows.length ? rows.map((row) => {
-      const li = document.createElement("li");
-      li.textContent = `${row.player_name} · ${formatMs(row.lap_time_ms)}`;
-      return li;
-    }) : [emptyBoard()]));
+    const trackName = TRACKS.find((track) => track.id === trackIdToLoad)?.name ?? "This track";
+    boardMeta.textContent = `${trackName} · best laps`;
+    boardList.replaceChildren(...(rows.length ? rows.map((row, index) => boardRow(row, index)) : [emptyBoard()]));
   } catch {
+    boardMeta.textContent = "Best laps";
     boardList.replaceChildren(emptyBoard("Leaderboard unavailable"));
   }
 }
 
+function boardRow(row: LeaderboardRow, index: number) {
+  const li = document.createElement("li");
+  li.classList.add(index === 0 ? "gold" : index === 1 ? "silver" : index === 2 ? "bronze" : "rest");
+  if (row.player_name === net.name) li.classList.add("me");
+  li.append(
+    cell("pos", String(index + 1).padStart(2, "0")),
+    cell("who", row.player_name),
+    cell("chip", row.mode === "time_attack" ? "Time" : "Race"),
+    cell("lap", formatMs(row.lap_time_ms)),
+  );
+  return li;
+}
+
+function cell(className: string, text: string) {
+  const span = document.createElement("span");
+  span.className = className;
+  span.textContent = text;
+  return span;
+}
+
 function emptyBoard(text = "No laps yet") {
   const li = document.createElement("li");
+  li.className = "empty";
   li.textContent = text;
   return li;
 }
