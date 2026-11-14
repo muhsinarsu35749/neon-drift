@@ -61,7 +61,7 @@ paintTracks();
 CAR_IDS.forEach((id) => {
   const button = document.createElement("button");
   button.type = "button";
-  button.innerHTML = `${CARS[id].name}<small>${CARS[id].blurb}</small>`;
+  button.innerHTML = `<span class="mini ${id}"></span><span class="pick"><b>${CARS[id].name}</b><small>${CARS[id].blurb}</small></span>`;
   button.addEventListener("click", () => net.command("select_car", { carId: id }));
   carPicker.append(button);
 });

@@ -256,24 +256,33 @@ input, select {
 input:focus, select:focus { border-color: var(--cyan); }
 
 button {
-  background: var(--cyan);
-  color: #06221b;
-  border: 0;
-  padding: 12px 14px;
-  font-weight: 800;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
-}
-
-button:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(92, 255, 214, 0.18); }
-
-button.ghost {
   background: transparent;
   color: var(--text);
   border: 1px solid var(--line);
+  padding: 12px 14px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background 0.15s ease;
 }
+
+button.primary {
+  background: linear-gradient(180deg, #b8fff0 0%, #3dffe0 42%, #14c9a8 100%);
+  color: #04241c;
+  border-color: transparent;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65), 0 10px 28px rgba(92, 255, 214, 0.18);
+}
+
+button.primary:hover { transform: translateY(-1px); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7), 0 14px 32px rgba(92, 255, 214, 0.28); }
+
+button.ghost {
+  background: rgba(8, 10, 16, 0.35);
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+button.ghost:hover { border-color: var(--dim); }
 
 button:disabled { opacity: 0.55; cursor: default; }
 
@@ -292,7 +301,36 @@ button:disabled { opacity: 0.55; cursor: default; }
 .modes button.on, .tracks button.on, .cars button.on {
   border-color: var(--cyan);
   color: var(--cyan);
+  background: rgba(92, 255, 214, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(92, 255, 214, 0.35);
 }
+
+.cars button { display: flex; align-items: center; gap: 10px; }
+.pick b { display: block; font-weight: 700; }
+.mini {
+  width: 42px;
+  height: 18px;
+  flex: 0 0 auto;
+  border-radius: 5px 13px 13px 5px;
+  background: currentColor;
+  box-shadow: 0 0 12px currentColor;
+  position: relative;
+}
+.mini::before, .mini::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  width: 7px;
+  height: 12px;
+  border-radius: 2px;
+  background: #07080c;
+}
+.mini::before { left: 6px; }
+.mini::after { right: 8px; width: 10px; height: 8px; top: 5px; border-radius: 2px; background: rgba(7, 8, 12, 0.72); }
+.mini.volt { color: #5cffd6; }
+.mini.pixel { color: #9eb6ff; border-radius: 3px; }
+.mini.bulk { color: #ffc857; width: 48px; height: 22px; }
+.mini.ghost { color: #ff3d8a; width: 46px; height: 14px; }
 
 .tracks button, .cars button {
   flex: 1;
