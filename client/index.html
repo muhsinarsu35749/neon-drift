@@ -4,13 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Neon Drift</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <div id="app">
+      <div class="stage" aria-hidden="true">
+        <div class="glow glow-a"></div>
+        <div class="glow glow-b"></div>
+        <div class="grid"></div>
+        <div class="car car-a"></div>
+        <div class="car car-b"></div>
+      </div>
       <header>
         <div class="brand">Neon Drift</div>
-        <div id="link" class="link">offline</div>
+        <div class="head-tools">
+          <button type="button" id="sound-btn" class="sound" aria-pressed="true">
+            <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="sound-label">Music</span>
+          </button>
+          <div id="link" class="link">offline</div>
+        </div>
       </header>
 
       <section id="connect" class="screen">
