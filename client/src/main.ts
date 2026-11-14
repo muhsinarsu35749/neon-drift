@@ -1,8 +1,10 @@
 import { CARS, CAR_IDS, TRACKS, type GameMode, type LeaderboardRow } from "@neon/shared";
+import { MenuMusic } from "./music.js";
 import { Net, httpUrl } from "./net.js";
 import { RaceView, lapLabel } from "./race.js";
 
 const net = new Net();
+const music = new MenuMusic();
 const raceRoot = document.querySelector<HTMLElement>("#race-root");
 if (!raceRoot) throw new Error("Missing race root");
 const race = new RaceView(raceRoot);
@@ -12,6 +14,8 @@ const menuScreen = must("#menu");
 const roomScreen = must("#room");
 const raceScreen = must("#race");
 const link = must("#link");
+const soundBtn = must("#sound-btn") as HTMLButtonElement;
+const soundLabel = must("#sound-label");
 const nameInput = mustInput<HTMLInputElement>("#name");
 const connectError = must("#connect-error");
 const menuError = must("#menu-error");
@@ -100,7 +104,17 @@ codeBtn.addEventListener("click", async () => {
   window.setTimeout(() => paint(), 700);
 });
 
+soundBtn.addEventListener("click", () => {
+  music.toggle();
+  paintSound();
+});
+window.addEventListener("pointerdown", (event) => {
+  if (event.target instanceof Node && soundBtn.contains(event.target)) return;
+  void music.start();
+}, { passive: true });
+
 net.onChange = () => paint();
+paintSound();
 if (net.token && net.name) net.connect(net.name);
 else paint();
 
@@ -116,6 +130,8 @@ function paint() {
   menuScreen.classList.toggle("hidden", phase !== "menu");
   roomScreen.classList.toggle("hidden", phase !== "room");
   raceScreen.classList.toggle("hidden", phase !== "race");
+  document.body.classList.toggle("racing", phase === "race");
+  music.setRacing(phase === "race");
   link.textContent = net.status === "online" ? `online · ${net.pingMs} ms` : net.status;
   link.classList.toggle("on", net.status === "online");
   link.classList.toggle("bad", net.status === "offline");
@@ -128,6 +144,12 @@ function paint() {
     race.sync(net.snap, net.playerId);
     paintHud();
   }
+}
+
+function paintSound() {
+  soundBtn.classList.toggle("on", !music.muted);
+  soundBtn.setAttribute("aria-pressed", music.muted ? "false" : "true");
+  soundLabel.textContent = music.muted ? "Muted" : "Music";
 }
 
 function screen() {

@@ -4,20 +4,36 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Neon Drift</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
     <div id="app">
+      <div class="stage" aria-hidden="true">
+        <div class="glow glow-a"></div>
+        <div class="glow glow-b"></div>
+        <div class="grid"></div>
+        <div class="car car-a"></div>
+        <div class="car car-b"></div>
+      </div>
       <header>
         <div class="brand">Neon Drift</div>
-        <div id="link" class="link">offline</div>
+        <div class="head-tools">
+          <button type="button" id="sound-btn" class="sound" aria-pressed="true">
+            <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+            <span id="sound-label">Music</span>
+          </button>
+          <div id="link" class="link">offline</div>
+        </div>
       </header>
 
       <section id="connect" class="screen">
         <div class="card">
           <p class="kicker">2–4 drivers · one public server</p>
           <h1>Pick a name and take a lane.</h1>
-          <p class="lede">Race mode needs two ready drivers. Time Attack is a solo clock. The Wokwi wheel comes later — until then the keyboard is the car.</p>
+          <p class="lede">Everyone plays at team3-game.codewithpeter.com. One driver can start. WASD drives until a wheel is attached.</p>
           <form id="connect-form">
             <label for="name">Driver name</label>
             <input id="name" name="name" maxlength="16" autocomplete="nickname" required />
