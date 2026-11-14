@@ -1,6 +1,14 @@
+![Neon Drift — cyberpunk circuit racing for 2–4 drivers.](docs/banner.svg)
+
 # Neon Drift
 
-An online multiplayer top-down racing game for 2-4 players. Players race neon cars around a futuristic track, collect power-ups and sabotage each other. Every player drives with a **Wokwi-simulated controller** (PSX gamepad or steering wheel), and all players meet on **one public internet server**.
+**Browser multiplayer racing** on a neon night circuit. **One player can start alone.** In a full room, **2–4 drivers** race neon cars, collect power-ups, and sabotage each other.
+
+Drive with **WASD** until a wheel is attached. A **Wokwi** PSX gamepad or steering wheel can take over, and everyone meets on **one public server**.
+
+**Play now:** [https://team3-game.codewithpeter.com](https://team3-game.codewithpeter.com)
+
+**Race** · **Time Attack** · **Boost & EMP** · **Best-lap leaderboard**
 
 ## Play
 
